@@ -63,13 +63,64 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
+      overscroll-behavior: none;
+    }
+    /* Специальный контейнер для независимого скроллинга внутри приложения */
+    .scroll-container {
+      overflow-y: auto;
+      overscroll-behavior-y: contain;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* Нативный Liquid Glass-эффект (высокая производительность на Apple) */
+    .glass-panel {
+      background-color: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(20px) saturate(190%);
+      -webkit-backdrop-filter: blur(20px) saturate(190%);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .glass-panel-top {
+      background-color: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(20px) saturate(190%);
+      -webkit-backdrop-filter: blur(20px) saturate(190%);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .glass-panel-bottom {
+      background-color: rgba(9, 13, 22, 0.65);
+      backdrop-filter: blur(20px) saturate(190%);
+      -webkit-backdrop-filter: blur(20px) saturate(190%);
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .glass-card {
+      background-color: rgba(30, 41, 59, 0.35);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+    .glass-input {
+      background-color: rgba(15, 23, 42, 0.4);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .glass-bubble-me {
+      background-color: rgba(79, 70, 229, 0.75);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .glass-bubble-other {
+      background-color: rgba(30, 41, 59, 0.55);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
     }
   </style>
 </head>
 <body class="bg-slate-950 text-slate-100 flex justify-center items-center h-screen overflow-hidden select-none">
 
   <!-- Основной контейнер-оболочка (адаптируется под размер телефона) -->
-  <div class="w-full max-w-md h-full bg-slate-900 flex flex-col relative overflow-hidden shadow-2xl border-x border-slate-800">
+  <div class="w-full max-w-md h-full bg-slate-950 flex flex-col relative overflow-hidden shadow-2xl border-x border-slate-800/40">
     
     <!-- Экран загрузки / Лоадер -->
     <div id="loading-screen" class="absolute inset-0 bg-slate-950 z-50 flex flex-col items-center justify-center p-6 view-transition">
@@ -92,11 +143,11 @@
 
     <!-- Модальное окно подтверждения -->
     <div id="confirm-modal" class="hidden absolute inset-0 bg-black/60 z-50 flex items-center justify-center p-6">
-      <div class="bg-slate-800 rounded-2xl p-6 w-full max-w-xs border border-slate-700">
+      <div class="bg-slate-900 rounded-2xl p-6 w-full max-w-xs border border-slate-800">
         <h3 id="modal-title" class="text-lg font-bold">Вы уверены?</h3>
         <p id="modal-desc" class="text-sm text-slate-400 mt-2">Это действие нельзя отменить.</p>
         <div class="flex space-x-3 mt-6">
-          <button id="modal-cancel-btn" class="flex-1 py-2 rounded-xl bg-slate-700 hover:bg-slate-600 font-medium text-sm">Отмена</button>
+          <button id="modal-cancel-btn" class="flex-1 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 font-medium text-sm">Отмена</button>
           <button id="modal-confirm-btn" class="flex-1 py-2 rounded-xl bg-red-600 hover:bg-red-500 font-medium text-sm">Да, сделать</button>
         </div>
       </div>
@@ -104,43 +155,43 @@
 
     <!-- Контекстное меню для управления чатом (Long Press / Правый клик) -->
     <div id="chat-context-modal" class="hidden absolute inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4">
-      <div class="bg-slate-800 w-full max-w-sm rounded-t-2xl sm:rounded-2xl p-4 border border-slate-700/60 shadow-2xl animate-fade-in">
-        <div class="flex items-center space-x-3 pb-3 border-b border-slate-700/40">
-          <div id="context-chat-avatar" class="w-10 h-10 rounded-full flex items-center justify-center text-lg"></div>
+      <div class="bg-slate-900/95 w-full max-w-sm rounded-2xl p-4 border border-slate-800/60 shadow-2xl animate-fade-in">
+        <div class="flex items-center space-x-3 pb-3 border-b border-slate-800/40">
+          <div id="context-chat-avatar" class="w-10 h-10 rounded-full flex items-center justify-center"></div>
           <div>
             <h4 id="context-chat-name" class="font-bold text-sm text-slate-100">Имя ЧАТА</h4>
             <p id="context-chat-username" class="text-xs text-slate-400">@username</p>
           </div>
         </div>
         <div class="mt-3 space-y-1">
-          <button onclick="handleContextAction('read')" class="w-full text-left py-3 px-3 hover:bg-slate-700/50 active:bg-slate-700 rounded-xl text-sm font-medium flex items-center space-x-3">
+          <button onclick="handleContextAction('read')" class="w-full text-left py-3 px-3 hover:bg-slate-800/50 active:bg-slate-800 rounded-xl text-sm font-medium flex items-center space-x-3">
             <span>👁️</span> <span>Пометить как прочитанное</span>
           </button>
-          <button onclick="handleContextAction('pin')" class="w-full text-left py-3 px-3 hover:bg-slate-700/50 active:bg-slate-700 rounded-xl text-sm font-medium flex items-center space-x-3">
+          <button onclick="handleContextAction('pin')" class="w-full text-left py-3 px-3 hover:bg-slate-800/50 active:bg-slate-800 rounded-xl text-sm font-medium flex items-center space-x-3">
             <span id="context-pin-icon">📌</span> <span id="context-pin-text">Закрепить чат</span>
           </button>
-          <button onclick="handleContextAction('mute')" class="w-full text-left py-3 px-3 hover:bg-slate-700/50 active:bg-slate-700 rounded-xl text-sm font-medium flex items-center space-x-3">
+          <button onclick="handleContextAction('mute')" class="w-full text-left py-3 px-3 hover:bg-slate-800/50 active:bg-slate-800 rounded-xl text-sm font-medium flex items-center space-x-3">
             <span id="context-mute-icon">🔇</span> <span id="context-mute-text">Выключить уведомления</span>
           </button>
           <button onclick="handleContextAction('delete')" class="w-full text-left py-3 px-3 hover:bg-red-950/30 active:bg-red-950/50 rounded-xl text-sm font-medium text-red-400 flex items-center space-x-3">
             <span>🗑️</span> <span>Удалить чат</span>
           </button>
         </div>
-        <button onclick="closeContextMenu()" class="w-full mt-3 py-3 bg-slate-700/60 hover:bg-slate-700 rounded-xl text-sm font-bold text-slate-300">Отмена</button>
+        <button onclick="closeContextMenu()" class="w-full mt-3 py-3 bg-slate-800/60 hover:bg-slate-800 rounded-xl text-sm font-bold text-slate-300">Отмена</button>
       </div>
     </div>
 
     <!-- ЭКРАН АВТОРИЗАЦИИ (ВХОД / РЕГИСТРАЦИЯ) -->
-    <div id="auth-screen" class="hidden absolute inset-0 bg-slate-900 z-40 flex flex-col overflow-y-auto no-scrollbar p-6 justify-center">
+    <div id="auth-screen" class="hidden absolute inset-0 bg-slate-950 z-40 flex flex-col scroll-container no-scrollbar p-6 justify-center">
       <div class="w-full">
         <div class="text-center mb-6">
           <span class="text-4xl">💬</span>
-          <h2 class="text-xl font-black mt-2 tracking-tight">Добро пожаловать в Nexus</h2>
-          <p class="text-xs text-slate-400 mt-1">Выберите способ входа для продолжения</p>
+          <h2 class="text-xl font-black mt-2 tracking-tight text-white">Nexus Messenger</h2>
+          <p class="text-xs text-slate-400 mt-1">Войдите в профиль или создайте новый</p>
         </div>
 
         <!-- Переключатель режима: Вход / Регистрация -->
-        <div class="flex bg-slate-800 p-1 rounded-xl mb-5 border border-slate-700/30">
+        <div class="flex bg-slate-900 p-1 rounded-xl mb-5 border border-slate-800/40">
           <button type="button" id="toggle-auth-login" onclick="setAuthMode('login')" class="flex-1 py-2 text-xs font-bold rounded-lg bg-brand-600 text-white transition-all">Вход</button>
           <button type="button" id="toggle-auth-register" onclick="setAuthMode('register')" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 transition-all">Регистрация</button>
         </div>
@@ -150,20 +201,20 @@
           <!-- Основные поля (Логин / Пароль) -->
           <div>
             <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Уникальный Юзернейм (без @)</label>
-            <input type="text" id="auth-username" placeholder="username" required class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-brand-500 transition-colors">
+            <input type="text" id="auth-username" placeholder="username" required class="w-full bg-slate-900 border border-slate-800/80 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-brand-500 transition-colors">
           </div>
 
           <div>
             <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Пароль</label>
-            <input type="password" id="auth-password" placeholder="••••••••" required class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-brand-500 transition-colors">
+            <input type="password" id="auth-password" placeholder="••••••••" required class="w-full bg-slate-900 border border-slate-800/80 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-brand-500 transition-colors">
           </div>
 
           <!-- Поля, отображаемые ТОЛЬКО при регистрации -->
-          <div id="register-fields-container" class="hidden space-y-3.5 pt-2 border-t border-slate-800">
+          <div id="register-fields-container" class="hidden space-y-3.5 pt-2 border-t border-slate-900">
             
             <!-- Выбор аватарки (Кастомная фотка или генератор) -->
             <div class="flex flex-col items-center mb-4">
-              <div id="auth-avatar-preview" onclick="triggerProfileAvatarUpload()" class="w-20 h-20 rounded-full bg-gradient-to-tr from-brand-600 to-indigo-500 shadow-xl flex items-center justify-center text-3xl cursor-pointer hover:opacity-90 relative group border-2 border-slate-700 overflow-hidden">
+              <div id="auth-avatar-preview" onclick="triggerProfileAvatarUpload()" class="w-20 h-20 rounded-full bg-gradient-to-tr from-brand-600 to-indigo-500 shadow-xl flex items-center justify-center text-3xl cursor-pointer hover:opacity-90 relative group border-2 border-slate-800 overflow-hidden">
                 <span id="auth-avatar-emoji">🦁</span>
                 <img id="auth-avatar-img-element" class="hidden w-full h-full object-cover rounded-full" src="" alt="Avatar" />
                 <div class="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -174,7 +225,7 @@
               <!-- Скрытый инпут для кастомной аватарки -->
               <input type="file" id="profile-avatar-input" accept="image/*" class="hidden" onchange="handleProfileAvatarSelection(event)">
 
-              <div class="mt-3 w-full bg-slate-800/50 p-2.5 rounded-xl border border-slate-700/50">
+              <div class="mt-3 w-full bg-slate-900/60 p-2.5 rounded-xl border border-slate-800/50">
                 <p class="text-[10px] text-slate-400 mb-1.5 text-center">Или выберите быстрый эмодзи-аватар</p>
                 <div class="grid grid-cols-6 gap-1 justify-items-center">
                   <button type="button" class="text-base p-0.5 hover:scale-125 transition-transform" onclick="selectAuthEmoji('🦁')">🦁</button>
@@ -195,17 +246,17 @@
 
             <div>
               <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Отображаемое имя</label>
-              <input type="text" id="auth-name" placeholder="Иван Иванов" class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-brand-500 transition-colors">
+              <input type="text" id="auth-name" placeholder="Иван Иванов" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-brand-500 transition-colors">
             </div>
 
             <div>
               <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Номер телефона</label>
-              <input type="tel" id="auth-phone" placeholder="+79991234567" class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-brand-500 transition-colors">
+              <input type="tel" id="auth-phone" placeholder="+79991234567" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-brand-500 transition-colors">
             </div>
 
             <div>
               <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">О себе</label>
-              <textarea id="auth-bio" placeholder="Допишите статус..." class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-2 text-xs text-slate-100 focus:outline-none focus:border-brand-500 transition-colors h-14 resize-none"></textarea>
+              <textarea id="auth-bio" placeholder="Допишите статус..." class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2 text-xs text-slate-100 focus:outline-none focus:border-brand-500 transition-colors h-14 resize-none"></textarea>
             </div>
           </div>
 
@@ -220,10 +271,10 @@
     <!-- ОСНОВНОЙ ЭКРАН ПРИЛОЖЕНИЯ -->
     <div id="main-view" class="hidden flex-1 flex flex-col h-full overflow-hidden relative">
       
-      <!-- HEADER (Уменьшенная компактная шапка высотой h-14) -->
-      <header class="h-14 bg-slate-900/90 backdrop-blur-md border-b border-slate-800/70 px-4 flex items-center justify-between z-10 flex-shrink-0">
+      <!-- HEADER (Уменьшенная компактная шапка высотой h-14 с Liquid Glass эффектом) -->
+      <header class="h-14 glass-panel-top px-4 flex items-center justify-between z-10 flex-shrink-0">
         <div class="flex items-center space-x-3">
-          <div id="header-avatar" class="w-9 h-9 rounded-full flex items-center justify-center text-lg shadow-md overflow-hidden bg-gradient-to-tr from-brand-600 to-indigo-500">🦁</div>
+          <div id="header-avatar" class="w-9 h-9 rounded-full flex items-center justify-center text-lg overflow-hidden"></div>
           <div>
             <h1 id="header-title" class="text-sm font-bold tracking-tight">Чаты</h1>
             <p id="header-subtitle" class="text-[10px] text-brand-500 font-bold leading-tight">@username</p>
@@ -237,19 +288,19 @@
       </header>
 
       <!-- ТАБ 1: Список чатов (Рабочая скролл-зона) -->
-      <div id="tab-chats" class="tab-content flex-1 overflow-y-auto no-scrollbar flex flex-col">
+      <div id="tab-chats" class="tab-content flex-1 flex flex-col overflow-hidden">
         <!-- Поиск среди открытых чатов -->
-        <div class="p-3 bg-slate-900/95 sticky top-0 z-10 flex-shrink-0">
+        <div class="p-3 bg-slate-950/80 sticky top-0 z-10 flex-shrink-0">
           <div class="relative">
             <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
               <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
             </span>
-            <input type="text" id="chats-search-input" placeholder="Поиск чатов..." class="w-full bg-slate-800 border border-slate-700/60 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-brand-500">
+            <input type="text" id="chats-search-input" placeholder="Поиск чатов..." class="w-full glass-input rounded-xl pl-9 pr-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-brand-500">
           </div>
         </div>
 
         <!-- Контейнер для списка -->
-        <div id="chats-list" class="divide-y divide-slate-800/40 px-2 flex-1 overflow-y-auto no-scrollbar">
+        <div id="chats-list" class="divide-y divide-slate-800/40 px-2 flex-1 scroll-container no-scrollbar pb-24">
           <div class="p-8 text-center text-slate-500 flex flex-col items-center justify-center space-y-3">
             <span class="text-3xl">👋</span>
             <p class="text-xs">У вас пока нет активных переписок.<br>Используйте вкладку «Поиск».</p>
@@ -257,88 +308,88 @@
         </div>
       </div>
 
-      <!-- ТАБ 2: Глобальный поиск контактов (Рабочая скролл-зона) -->
-      <div id="tab-search" class="tab-content hidden flex-1 overflow-y-auto no-scrollbar flex flex-col">
+      <!-- ТАБ 2: Глобальный поиск контактов (Telegram Style) -->
+      <div id="tab-search" class="tab-content hidden flex-1 flex flex-col overflow-hidden">
         <div class="p-4 flex-shrink-0">
-          <h2 class="text-lg font-extrabold mb-1.5">Глобальный поиск</h2>
-          <p class="text-[11px] text-slate-400 mb-3">Найдите собеседника по юзернейму, имени или номеру телефона.</p>
+          <h2 class="text-lg font-extrabold mb-1 tracking-tight">Контакты</h2>
+          <p class="text-[11px] text-slate-400 mb-3">Найдите собеседника по юзернейму, имени или телефону.</p>
           
           <div class="relative">
             <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
               <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
             </span>
-            <input type="text" id="global-search-input" placeholder="Имя, @username или +7..." class="w-full bg-slate-800 border border-slate-700 rounded-xl pl-9 pr-3 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-brand-500">
+            <input type="text" id="global-search-input" placeholder="Имя, @username или номер..." class="w-full glass-input rounded-xl pl-9 pr-3 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-brand-500">
           </div>
         </div>
 
         <!-- Результаты -->
-        <div class="px-4 flex-1 overflow-y-auto no-scrollbar">
-          <div class="flex items-center justify-between pb-2 border-b border-slate-800 mb-2 flex-shrink-0">
-            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Контакты</span>
+        <div class="px-4 flex-1 scroll-container no-scrollbar">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-800 mb-2.5 flex-shrink-0">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Глобальные результаты</span>
             <span id="search-count" class="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full">0</span>
           </div>
-          <div id="search-results" class="space-y-2 pb-20">
+          <div id="search-results" class="space-y-2 pb-24">
             <p class="text-center text-xs text-slate-500 py-8">Введите поисковый запрос выше...</p>
           </div>
         </div>
       </div>
 
-      <!-- ТАБ 3: Настройки и Опции (Рабочая скролл-зона) -->
-      <div id="tab-settings" class="tab-content hidden flex-1 overflow-y-auto no-scrollbar flex flex-col">
-        <div class="p-5 space-y-5 pb-24 flex-1 overflow-y-auto no-scrollbar">
+      <!-- ТАБ 3: Настройки и Опции (Telegram Profile Style) -->
+      <div id="tab-settings" class="tab-content hidden flex-1 scroll-container no-scrollbar">
+        <div class="p-4 space-y-4 pb-24">
           
-          <!-- Карточка аккаунта -->
-          <div class="text-center bg-slate-800/30 p-4 rounded-2xl border border-slate-800">
-            <div id="settings-avatar-preview" class="w-20 h-20 rounded-full mx-auto flex items-center justify-center text-3xl shadow-xl border-2 border-slate-700 bg-gradient-to-tr from-brand-600 to-indigo-500 mb-3 overflow-hidden">🦁</div>
-            <h3 id="settings-display-name" class="text-base font-bold">Имя пользователя</h3>
+          <!-- Карточка нативного профиля с жидким стеклом -->
+          <div class="glass-card rounded-2xl p-5 text-center relative overflow-hidden flex flex-col items-center">
+            <div id="settings-avatar-preview" class="w-20 h-20 rounded-full flex items-center justify-center text-3xl shadow-xl border-2 border-slate-700 mb-3 overflow-hidden"></div>
+            <h3 id="settings-display-name" class="text-base font-bold tracking-tight">Имя пользователя</h3>
             <p id="settings-display-username" class="text-xs text-slate-400">@username</p>
           </div>
 
           <!-- Блок детальной информации -->
-          <div class="space-y-3">
-            <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider pl-1">Данные аккаунта</h4>
-            <div class="bg-slate-800/40 border border-slate-800/80 rounded-2xl p-3.5 space-y-3">
+          <div class="space-y-2">
+            <h4 class="text-[9px] font-bold text-slate-400 uppercase tracking-wider pl-1">Личные данные</h4>
+            <div class="glass-card rounded-2xl p-3.5 space-y-3">
               <div class="flex items-center justify-between">
                 <div>
                   <span class="text-[9px] text-slate-500 uppercase font-bold">Номер телефона</span>
-                  <p id="settings-display-phone" class="text-xs font-semibold mt-0.5">+79991234567</p>
+                  <p id="settings-display-phone" class="text-xs font-semibold mt-0.5">+7 999 123-45-67</p>
                 </div>
               </div>
-              <div class="flex items-center justify-between pt-2.5 border-t border-slate-800/60">
+              <div class="flex items-center justify-between pt-2.5 border-t border-slate-800/40">
                 <div>
                   <span class="text-[9px] text-slate-500 uppercase font-bold">О себе</span>
-                  <p id="settings-display-bio" class="text-xs font-semibold mt-0.5">В сети</p>
+                  <p id="settings-display-bio" class="text-xs font-semibold mt-0.5">Доступен</p>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Настройки Конфиденциальности (Privacy) -->
-          <div class="space-y-3">
-            <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider pl-1">Конфиденциальность</h4>
-            <div class="bg-slate-800/40 border border-slate-800/80 rounded-2xl p-3.5 space-y-3">
+          <!-- Настройки Конфиденциальности (Privacy Settings) -->
+          <div class="space-y-2">
+            <h4 class="text-[9px] font-bold text-slate-400 uppercase tracking-wider pl-1">Конфиденциальность</h4>
+            <div class="glass-card rounded-2xl p-3.5 space-y-3">
               <div class="flex items-center justify-between">
-                <span class="text-xs font-semibold">Показывать номер телефона</span>
-                <select id="setting-privacy-phone" onchange="updatePrivacySetting('phone', this.value)" class="bg-slate-800 border border-slate-700 rounded-lg text-xs p-1 focus:outline-none">
-                  <option value="all">Всем</option>
-                  <option value="nobody">Никому</option>
+                <span class="text-xs font-semibold text-slate-200">Номер телефона</span>
+                <select id="setting-privacy-phone" onchange="updatePrivacySetting('phone', this.value)" class="bg-slate-900 border border-slate-800 rounded-lg text-xs p-1 focus:outline-none">
+                  <option value="all">Виден всем</option>
+                  <option value="nobody">Скрыт для всех</option>
                 </select>
               </div>
-              <div class="flex items-center justify-between pt-2.5 border-t border-slate-800/60">
-                <span class="text-xs font-semibold">Статус "В сети"</span>
-                <select id="setting-privacy-online" onchange="updatePrivacySetting('online', this.value)" class="bg-slate-800 border border-slate-700 rounded-lg text-xs p-1 focus:outline-none">
-                  <option value="all">Всем</option>
-                  <option value="nobody">Скрыть</option>
+              <div class="flex items-center justify-between pt-2.5 border-t border-slate-800/40">
+                <span class="text-xs font-semibold text-slate-200">Статус сети (Онлайн)</span>
+                <select id="setting-privacy-online" onchange="updatePrivacySetting('online', this.value)" class="bg-slate-900 border border-slate-800 rounded-lg text-xs p-1 focus:outline-none">
+                  <option value="all">Показывать всем</option>
+                  <option value="nobody">Скрыть ото всех</option>
                 </select>
               </div>
             </div>
           </div>
 
-          <!-- Оформление (Theme) -->
-          <div class="space-y-3">
-            <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider pl-1">Оформление</h4>
-            <div class="bg-slate-800/40 border border-slate-800/80 rounded-2xl p-3.5 flex items-center justify-between">
-              <span class="text-xs font-semibold">Цветовой акцент</span>
+          <!-- Оформление (Theme Options) -->
+          <div class="space-y-2">
+            <h4 class="text-[9px] font-bold text-slate-400 uppercase tracking-wider pl-1">Оформление</h4>
+            <div class="glass-card rounded-2xl p-3.5 flex items-center justify-between">
+              <span class="text-xs font-semibold text-slate-200">Акцентный цвет</span>
               <div class="flex space-x-2">
                 <button onclick="setThemeAccent('6366f1')" class="w-5 h-5 rounded-full bg-indigo-500 border-2 border-white/40"></button>
                 <button onclick="setThemeAccent('10b981')" class="w-5 h-5 rounded-full bg-emerald-500 border-2 border-slate-900"></button>
@@ -349,20 +400,22 @@
           </div>
 
           <!-- Кнопки действий -->
-          <button onclick="openProfileEdit()" class="w-full bg-slate-800 hover:bg-slate-700/80 active:scale-[0.98] transition-transform py-3 rounded-xl font-bold text-xs border border-slate-700 flex items-center justify-center space-x-2">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
-            <span>Редактировать профиль</span>
-          </button>
+          <div class="space-y-2 pt-2">
+            <button onclick="openProfileEdit()" class="w-full glass-card hover:bg-slate-800/40 active:scale-[0.98] transition-transform py-3 rounded-xl font-bold text-xs flex items-center justify-center space-x-2">
+              <svg class="w-3.5 h-3.5 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+              <span>Редактировать профиль</span>
+            </button>
 
-          <button onclick="triggerLogout()" class="w-full bg-red-950/40 hover:bg-red-950/60 text-red-400 active:scale-[0.98] transition-transform py-3 rounded-xl font-bold text-xs border border-red-900/40 flex items-center justify-center space-x-2">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-            <span>Выйти из аккаунта</span>
-          </button>
+            <button onclick="triggerLogout()" class="w-full bg-red-950/20 border border-red-900/40 text-red-400 active:scale-[0.98] transition-transform py-3 rounded-xl font-bold text-xs flex items-center justify-center space-x-2">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+              <span>Выйти из аккаунта</span>
+            </button>
+          </div>
         </div>
       </div>
 
-      <!-- НАВИГАЦИОННАЯ ПАНЕЛЬ СНИЗУ (Высота зафиксирована h-16) -->
-      <nav class="h-16 bg-slate-950/90 backdrop-blur-md border-t border-slate-800 px-4 flex justify-around items-center z-20 flex-shrink-0">
+      <!-- НАВИГАЦИОННАЯ ПАНЕЛЬ СНИЗУ (Высота зафиксирована h-16 с эффектом Liquid Glass) -->
+      <nav class="h-16 glass-panel-bottom px-4 flex justify-around items-center z-20 flex-shrink-0">
         <button onclick="switchTab('chats')" id="btn-tab-chats" class="flex flex-col items-center justify-center space-y-1 py-1 px-3 text-brand-500 transition-colors">
           <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd"/></svg>
           <span class="text-[9px] font-bold">Чаты</span>
@@ -383,8 +436,8 @@
     <!-- ОКНО ОТКРЫТОГО ЧАТА (Рабочая зона фиксирована по высоте) -->
     <div id="chat-view" class="hidden absolute inset-0 bg-slate-950 z-30 flex flex-col view-transition transform translate-x-full overflow-hidden">
       
-      <!-- Чат-Header (Высота h-14) -->
-      <header class="h-14 bg-slate-900 border-b border-slate-800/80 px-4 flex items-center justify-between flex-shrink-0 z-10">
+      <!-- Чат-Header (Высота h-14 с Liquid Glass эффектом) -->
+      <header class="h-14 glass-panel px-4 flex items-center justify-between flex-shrink-0 z-10">
         <div class="flex items-center space-x-2">
           <!-- Кнопка назад -->
           <button onclick="closeActiveChat()" class="p-1 hover:bg-slate-800 rounded-full text-slate-300">
@@ -393,7 +446,7 @@
           
           <!-- Оппонент -->
           <div class="flex items-center space-x-2">
-            <div id="chat-header-avatar" class="w-9 h-9 rounded-full flex items-center justify-center text-lg shadow-md overflow-hidden bg-gradient-to-tr from-brand-600 to-indigo-500">🦊</div>
+            <div id="chat-header-avatar" class="w-9 h-9 rounded-full flex items-center justify-center overflow-hidden"></div>
             <div>
               <h2 id="chat-header-name" class="font-bold text-xs tracking-tight leading-tight">Загрузка...</h2>
               <span id="chat-header-status" class="text-[9px] text-emerald-400 font-bold block">онлайн</span>
@@ -408,7 +461,7 @@
       </header>
 
       <!-- Окно вывода сообщений (Идеально скроллится внутри чата) -->
-      <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-3 no-scrollbar bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-slate-950">
+      <div id="chat-messages" class="flex-1 scroll-container no-scrollbar p-4 space-y-3 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-slate-950">
         <p class="text-center text-[10px] text-slate-600 py-2">Nexus End-to-End шифрование активно.</p>
         
         <div id="messages-container" class="space-y-3.5"></div>
@@ -428,14 +481,14 @@
         </div>
       </div>
 
-      <!-- Поле ввода текста и медиа (Высота зафиксирована h-16) -->
-      <div class="h-16 bg-slate-900 border-t border-slate-800/80 px-4 flex items-center space-x-2 sticky bottom-0 flex-shrink-0 z-10">
+      <!-- Поле ввода текста и медиа (Высота зафиксирована h-16 с эффектом Liquid Glass) -->
+      <div class="h-16 glass-panel-bottom px-4 flex items-center space-x-2 sticky bottom-0 flex-shrink-0 z-10">
         <button onclick="triggerImageUpload()" class="p-2 hover:bg-slate-800 rounded-xl text-slate-400 hover:text-white transition-colors relative">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
           <input type="file" id="media-file-input" accept="image/*" class="hidden" onchange="handleImageSelection(event)">
         </button>
 
-        <input type="text" id="chat-message-input" placeholder="Введите сообщение..." class="flex-1 bg-slate-800 border border-slate-700/60 rounded-xl px-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-brand-500">
+        <input type="text" id="chat-message-input" placeholder="Введите сообщение..." class="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-brand-500">
 
         <div id="action-btn-container" class="flex items-center">
           <button id="send-msg-btn" onclick="sendTextMessage()" class="hidden p-2 bg-brand-600 hover:bg-brand-500 active:scale-95 transition-all rounded-xl text-white">
@@ -455,7 +508,7 @@
   <!-- FIREBASE И ЛОГИКА ПРИЛОЖЕНИЯ -->
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signInAnonymously } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
     import { getFirestore, doc, setDoc, getDoc, collection, addDoc, updateDoc, onSnapshot, deleteDoc } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
 
     // Вставленная конфигурация вашего приложения Firebase
@@ -499,6 +552,22 @@
     let contextChatId = null;
     let touchTimer = null;
     let isLongPress = false;
+
+    // Блокировка системного скролла iOS Safari при перетаскивании вне прокручиваемых контейнеров
+    document.addEventListener('touchmove', function(e) {
+      let isScrollable = false;
+      let parent = e.target;
+      while (parent) {
+        if (parent.classList && parent.classList.contains('scroll-container')) {
+          isScrollable = true;
+          break;
+        }
+        parent = parent.parentNode;
+      }
+      if (!isScrollable) {
+        e.preventDefault();
+      }
+    }, { passive: false });
 
     // Настройка режима авторизации
     window.setAuthMode = (mode) => {
@@ -669,12 +738,16 @@
       showToast('Цветовая схема изменена', 'success');
     };
 
-    // Рендер аватаров по единому шаблону
-    function renderAvatarHTML(profile, sizeClass = 'w-10 h-10') {
+    // Рендер аватаров по единому стандартизованному шаблону (высокая четкость и защита от багов)
+    function renderAvatarHTML(profile, sizeClass = 'w-10 h-10', emojiSize = 'text-xl') {
+      const bg = profile.avatarGradient || 'bg-gradient-to-tr from-brand-600 to-indigo-500';
+      // Очищаем ошметки лишних классов размеров в градиенте
+      const cleanBg = bg.replace(/\b(w|h)-\d+\b/g, '').replace('rounded-full', '').trim();
+      
       if (profile.avatarUrl) {
         return `<img src="${profile.avatarUrl}" class="${sizeClass} rounded-full object-cover shadow-sm flex-shrink-0" alt="${profile.name}" />`;
       } else {
-        return `<div class="${sizeClass} rounded-full flex items-center justify-center text-xl shadow-md ${profile.avatarGradient || 'bg-gradient-to-tr from-brand-600 to-indigo-500'} flex-shrink-0">${profile.avatarEmoji || '🦁'}</div>`;
+        return `<div class="${sizeClass} rounded-full flex items-center justify-center font-bold text-center leading-none ${cleanBg} flex-shrink-0 select-none shadow-md overflow-hidden"><span class="${emojiSize} leading-none">${profile.avatarEmoji || '🦁'}</span></div>`;
       }
     }
 
@@ -721,7 +794,7 @@
       document.getElementById('context-chat-username').innerText = `@${opponent.username}`;
       
       const avContainer = document.getElementById('context-chat-avatar');
-      avContainer.innerHTML = renderAvatarHTML(opponent, 'w-10 h-10');
+      avContainer.innerHTML = renderAvatarHTML(opponent, 'w-10 h-10', 'text-xl');
 
       // Динамический текст для закрепа/мута
       const chatSettings = (userProfile.chatSettings && userProfile.chatSettings[chatId]) || {};
@@ -782,38 +855,53 @@
       }
     };
 
-    // Аутентификационный слушатель
+    // Аутентификационный слушатель (Rule 3)
     onAuthStateChanged(auth, async (currUser) => {
       user = currUser;
       if (user) {
-        try {
-          const profileRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', user.uid);
-          const profileSnap = await getDoc(profileRef);
+        if (user.isAnonymous) {
+          // Загрузка контактов в фоне для неавторизованного экрана (проверка занятости юзернейма)
+          const usersRef = collection(db, 'artifacts', appId, 'public', 'data', 'users');
+          onSnapshot(usersRef, (snapshot) => {
+            allUsers = [];
+            snapshot.forEach(doc => {
+              allUsers.push({ id: doc.id, ...doc.data() });
+            });
+            updateGlobalSearch();
+          }, (err) => {
+            console.error("BG Users fetch issue (Anonymous):", err);
+          });
+          hideElement('loading-screen');
+          showElement('auth-screen');
+        } else {
+          // Пользователь авторизован полноценно
+          try {
+            const profileRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', user.uid);
+            const profileSnap = await getDoc(profileRef);
 
-          if (profileSnap.exists()) {
-            userProfile = profileSnap.data();
-            setupMainApp();
-          } else {
+            if (profileSnap.exists()) {
+              userProfile = profileSnap.data();
+              setupMainApp();
+            } else {
+              hideElement('loading-screen');
+              showElement('auth-screen');
+              setAuthMode('register'); // Профиль еще не заполнен
+            }
+          } catch (err) {
+            console.error("Profile check error:", err);
             hideElement('loading-screen');
             showElement('auth-screen');
           }
-        } catch (err) {
-          console.error("Profile check error:", err);
+        }
+      } else {
+        // Бесшовный анонимный вход на старте согласно Rule 3 (убирает зависания)
+        try {
+          await signInAnonymously(auth);
+        } catch (e) {
+          console.error("First-load anonymous auth error:", e);
           hideElement('loading-screen');
           showElement('auth-screen');
         }
-      } else {
-        // Если не авторизован, сначала загружаем всех юзеров (чтобы проверять уникальность при регистрации)
-        const usersRef = collection(db, 'artifacts', appId, 'public', 'data', 'users');
-        onSnapshot(usersRef, (snapshot) => {
-          allUsers = [];
-          snapshot.forEach(doc => {
-            allUsers.push({ id: doc.id, ...doc.data() });
-          });
-        });
-        hideElement('main-view');
-        hideElement('loading-screen');
-        showElement('auth-screen');
       }
     });
 
@@ -827,9 +915,9 @@
       setupDOMEvents();
     }
 
-    // Запуск real-time прослушивания базы данных (Rule 3)
+    // Запуск real-time прослушивания базы данных
     function startRealtimeListeners() {
-      if (!user) return;
+      if (!user || user.isAnonymous) return;
 
       firestoreUnsubscribers.forEach(unsub => unsub());
       firestoreUnsubscribers = [];
@@ -880,21 +968,22 @@
       firestoreUnsubscribers.push(unsubMessages);
     }
 
-    // Логика инициализации диалога
+    // Логика инициализации диалога с гарантированно уникальным алфавитным ID
     window.startChatWithUser = async (otherUserId) => {
       if (!user) return;
 
       const opponent = allUsers.find(u => u.id === otherUserId);
       if (!opponent) return;
 
-      let existingChat = activeChats.find(chat => 
-        chat.participants.includes(user.uid) && chat.participants.includes(otherUserId)
-      );
+      // Сортируем ID участников по алфавиту для гарантированно уникальной связи
+      const sortedIds = [user.uid, otherUserId].sort();
+      const newChatId = 'chat_' + sortedIds[0] + '_' + sortedIds[1];
+
+      let existingChat = activeChats.find(chat => chat.id === newChatId);
 
       if (existingChat) {
-        openChatWindow(existingChat.id, opponent);
+        openChatWindow(newChatId, opponent);
       } else {
-        const newChatId = 'chat_' + Math.min(user.uid, otherUserId) + '_' + Math.max(user.uid, otherUserId);
         const chatPayload = {
           id: newChatId,
           participants: [user.uid, otherUserId],
@@ -922,7 +1011,7 @@
       document.getElementById('chat-header-status').innerText = privacyStatus;
 
       const avContainer = document.getElementById('chat-header-avatar');
-      avContainer.innerHTML = renderAvatarHTML(opponent, 'w-9 h-9');
+      avContainer.innerHTML = renderAvatarHTML(opponent, 'w-9 h-9', 'text-sm');
 
       const chatView = document.getElementById('chat-view');
       chatView.classList.remove('hidden');
@@ -954,7 +1043,7 @@
       }, 300);
     };
 
-    // Отрисовка сообщений внутри чата
+    // Отрисовка сообщений внутри чата (с Liquid Glass стилем пузырей)
     function renderMessages() {
       const container = document.getElementById('messages-container');
       container.innerHTML = '';
@@ -1029,7 +1118,7 @@
           `;
         } else {
           contentHtml = `
-            <div class="${isMe ? 'bg-brand-600 text-white' : 'bg-slate-800 text-slate-100'} px-4 py-2.5 rounded-2xl max-w-xs border border-slate-700/30 flex flex-col relative shadow">
+            <div class="${isMe ? 'glass-bubble-me text-white' : 'glass-bubble-other text-slate-100'} px-4 py-2.5 rounded-2xl max-w-xs flex flex-col relative shadow">
               <p class="text-[14px] leading-relaxed break-words pr-6">${escapeHtml(msg.content)}</p>
               <div class="absolute bottom-1 right-2 text-[9px] text-slate-300 flex items-center space-x-1 select-none">
                 <span>${timeString}</span>
@@ -1317,9 +1406,9 @@
         const bPinned = bSettings.pinned ? 1 : 0;
 
         if (aPinned !== bPinned) {
-          return bPinned - aPinned; // Закрепленные идут вверх
+          return bPinned - aPinned; // Pinned сверху
         }
-        return b.lastMessageTime - a.lastMessageTime; // Затем сортировка по времени сообщения
+        return b.lastMessageTime - a.lastMessageTime;
       });
 
       if (searchQuery) {
@@ -1352,7 +1441,7 @@
         const unreadCount = messagesList.filter(m => m.chatId === chat.id && m.senderId !== user.uid && m.timestamp > lastRead).length;
 
         const chatItem = document.createElement('div');
-        chatItem.className = 'flex items-center space-x-3 p-3.5 hover:bg-slate-800/40 rounded-2xl cursor-pointer transition-all active:scale-[0.99] border-b border-slate-800/20 relative';
+        chatItem.className = 'flex items-center space-x-3 p-3.5 hover:bg-slate-800/20 rounded-2xl cursor-pointer transition-all active:scale-[0.99] border-b border-slate-900 relative';
         
         // Подключаем слушатели на лонгпресс и контекстное меню
         chatItem.oncontextmenu = (e) => handleChatContextMenu(e, chat.id);
@@ -1360,7 +1449,7 @@
         chatItem.ontouchend = () => handleChatTouchEnd();
         chatItem.onclick = (e) => handleChatClick(e, chat.id);
 
-        const avHtml = renderAvatarHTML(opponent, 'w-11 h-11');
+        const avHtml = renderAvatarHTML(opponent, 'w-11 h-11', 'text-xl');
 
         const msgTime = new Date(chat.lastMessageTime);
         const timeStr = msgTime.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
@@ -1391,7 +1480,7 @@
       return allUsers.find(u => u.id === oppId);
     }
 
-    // Глобальный поиск
+    // Глобальный поиск контактов
     function updateGlobalSearch() {
       const searchVal = document.getElementById('global-search-input').value.toLowerCase().trim();
       const resultsContainer = document.getElementById('search-results');
@@ -1421,9 +1510,9 @@
 
       matched.forEach(opponent => {
         const item = document.createElement('div');
-        item.className = 'flex items-center justify-between p-3 bg-slate-800/40 hover:bg-slate-800 border border-slate-800 rounded-2xl transition-all';
+        item.className = 'flex items-center justify-between p-3 bg-slate-900/40 hover:bg-slate-900 border border-slate-800 rounded-2xl transition-all';
         
-        const avHtml = renderAvatarHTML(opponent, 'w-10 h-10');
+        const avHtml = renderAvatarHTML(opponent, 'w-11 h-11', 'text-xl');
 
         // Скрываем телефон, если настроена конфиденциальность оппонента
         const isPhoneVisible = opponent.privacySettings && opponent.privacySettings.phone === 'nobody' ? 'Скрыт' : opponent.phone;
@@ -1448,7 +1537,7 @@
       document.getElementById('header-subtitle').innerText = `@${userProfile.username}`;
       
       const hav = document.getElementById('header-avatar');
-      hav.innerHTML = renderAvatarHTML(userProfile, 'w-9 h-9');
+      hav.innerHTML = renderAvatarHTML(userProfile, 'w-9 h-9', 'text-sm');
 
       document.getElementById('settings-display-name').innerText = userProfile.name;
       document.getElementById('settings-display-username').innerText = `@${userProfile.username}`;
@@ -1456,7 +1545,7 @@
       document.getElementById('settings-display-bio').innerText = userProfile.bio;
       
       const sav = document.getElementById('settings-avatar-preview');
-      sav.innerHTML = renderAvatarHTML(userProfile, 'w-20 h-20 mx-auto border-2 border-slate-700 shadow-xl');
+      sav.innerHTML = renderAvatarHTML(userProfile, 'w-20 h-20 mx-auto border-2 border-slate-700 shadow-xl', 'text-3xl');
 
       // Обновляем селекты конфиденциальности
       if (userProfile.privacySettings) {
@@ -1508,6 +1597,7 @@
       document.getElementById(id).classList.add('hidden');
     }
 
+    // Безопасный эскейпинг HTML для предотвращения XSS
     function escapeHtml(text) {
       if (typeof text !== 'string') return '';
       const map = {
